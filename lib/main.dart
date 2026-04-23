@@ -35,9 +35,10 @@ class GasSafetyApp extends StatelessWidget {
         title: 'Gas Safety Monitor',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          primarySwatch: Colors.blue,
-          fontFamily: 'Roboto', // Modern readable font
-          scaffoldBackgroundColor: Colors.grey[50], // Consistent clean background
+          brightness: Brightness.dark,
+          primaryColor: const Color(0xFF00FF41),
+          scaffoldBackgroundColor: const Color(0xFF151515),
+          fontFamily: 'Roboto',
         ),
         home: const HomeScreen(),
       ),

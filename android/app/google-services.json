@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "536476193313",
+    "project_id": "gasdettect",
+    "storage_bucket": "gasdettect.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:536476193313:android:385a09c4a1b68ddd17c960",
+        "android_client_info": {
+          "package_name": "com.example.gas_safety_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDP1wPzJq0TDKQeDt0kW3Ht5TEAwv9TT9k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
