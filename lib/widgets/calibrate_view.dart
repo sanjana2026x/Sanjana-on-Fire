@@ -23,9 +23,9 @@ class _CalibrateViewState extends State<CalibrateView> {
           isCalibrating = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: const Color(0xFF00FF41),
-            content: const Text(
+          const SnackBar(
+            backgroundColor: Color(0xFF00FF41),
+            content: Text(
               'CALIBRATION SUCCESSFUL',
               style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, letterSpacing: 1),
             ),

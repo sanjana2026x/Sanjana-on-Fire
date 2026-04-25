@@ -43,7 +43,7 @@ class _AlertsViewState extends State<AlertsView> {
                   title: const Text('Push Notifications', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                   subtitle: const Text('Receive alerts on your device', style: TextStyle(color: Colors.grey, fontSize: 12)),
                   value: pushNotifications,
-                  activeColor: const Color(0xFF00FF41),
+                  activeThumbColor: const Color(0xFF00FF41),
                   onChanged: (bool value) {
                     setState(() {
                       pushNotifications = value;
@@ -55,7 +55,7 @@ class _AlertsViewState extends State<AlertsView> {
                   title: const Text('SMS Alerts', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                   subtitle: const Text('Send texts to emergency contacts', style: TextStyle(color: Colors.grey, fontSize: 12)),
                   value: smsAlerts,
-                  activeColor: const Color(0xFF00FF41),
+                  activeThumbColor: const Color(0xFF00FF41),
                   onChanged: (bool value) {
                     setState(() {
                       smsAlerts = value;
@@ -67,7 +67,7 @@ class _AlertsViewState extends State<AlertsView> {
                   title: const Text('Sound Alarm', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                   subtitle: const Text('Play siren on critical danger', style: TextStyle(color: Colors.grey, fontSize: 12)),
                   value: soundAlarm,
-                  activeColor: const Color(0xFF00FF41),
+                  activeThumbColor: const Color(0xFF00FF41),
                   onChanged: (bool value) {
                     setState(() {
                       soundAlarm = value;

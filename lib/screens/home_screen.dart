@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
-import '../providers/gas_provider.dart';
 import '../widgets/dashboard_view.dart';
 import '../widgets/history_view.dart';
 import '../widgets/alerts_view.dart';
