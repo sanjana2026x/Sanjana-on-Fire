@@ -27,4 +27,10 @@ class FirebaseService {
       }
     });
   }
+
+  /// Updates the buzzer status in Firebase
+  Future<void> updateBuzzer(bool enabled) async {
+    if (_dbRef == null) return;
+    await _dbRef!.child('gas_system').update({'buzzer_enabled': enabled});
+  }
 }

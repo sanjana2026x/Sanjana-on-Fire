@@ -28,7 +28,15 @@ class DashboardView extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: const Color(0xFF1A1A1A),
                     borderRadius: BorderRadius.circular(4),
-                    border: Border.all(color: Colors.white.withOpacity(0.05)),
+                    border: Border.all(color: isDanger ? Colors.redAccent.withOpacity(0.5) : Colors.white.withOpacity(0.05)),
+                    boxShadow: [
+                      if (isDanger)
+                        BoxShadow(
+                          color: Colors.redAccent.withOpacity(0.2),
+                          blurRadius: 20,
+                          spreadRadius: 2,
+                        ),
+                    ],
                   ),
                   child: IntrinsicHeight(
                     child: Row(
@@ -60,7 +68,7 @@ class DashboardView extends StatelessWidget {
                                         ),
                                         SizedBox(height: 4),
                                         Text(
-                                          'CARBON DIOXIDE',
+                                          'GAS MONITOR',
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 20,
@@ -117,7 +125,7 @@ class DashboardView extends StatelessWidget {
                                       const Icon(Icons.history, color: Colors.grey, size: 14),
                                       const SizedBox(width: 8),
                                       Text(
-                                        'LAST UPDATED: ${DateFormat('hh:mm:ss a').format(DateTime.now())}',
+                                        'LAST UPDATED: ${DateFormat('hh:mm:ss a').format(data.timestamp)}',
                                         style: const TextStyle(
                                           color: Colors.grey,
                                           fontSize: 12,
@@ -187,19 +195,74 @@ class DashboardView extends StatelessWidget {
                       const SizedBox(height: 16),
                       Divider(color: Colors.white.withOpacity(0.1)),
                       const SizedBox(height: 8),
-                      const LinearSensorIndicator(
+                      LinearSensorIndicator(
                         icon: Icons.local_fire_department_outlined,
-                        label: 'LPG / Propane',
-                        value: '0 PPM',
-                        percentage: 0.1,
-                        color: Color(0xFF00FF41),
+                        label: 'LPG / Propane (MQ-2)',
+                        value: '${data.mq2Value} PPM',
+                        percentage: (data.mq2Value / 1024).clamp(0.0, 1.0),
+                        color: data.mq2Value > 500 ? Colors.redAccent : const Color(0xFF00FF41),
                       ),
-                      const LinearSensorIndicator(
+                      LinearSensorIndicator(
                         icon: Icons.air,
-                        label: 'Particulate / Smoke',
-                        value: '12 PM2.5',
-                        percentage: 0.25,
-                        color: Colors.amber,
+                        label: 'Air Quality (MQ-135)',
+                        value: '${data.mq135Value} AQI',
+                        percentage: (data.mq135Value / 1024).clamp(0.0, 1.0),
+                        color: data.mq135Value > 300 ? Colors.orangeAccent : Colors.blueAccent,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Buzzer Control Card
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1E1E1E),
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(
+                      color: data.buzzerEnabled ? const Color(0xFF00FF41).withOpacity(0.3) : Colors.white.withOpacity(0.05)
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            data.buzzerEnabled ? Icons.notifications_active : Icons.notifications_off,
+                            color: data.buzzerEnabled ? const Color(0xFF00FF41) : Colors.grey,
+                          ),
+                          const SizedBox(width: 12),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'REMOTE BUZZER',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1,
+                                ),
+                              ),
+                              Text(
+                                data.buzzerEnabled ? 'SYSTEM ARMED' : 'SYSTEM MUTED',
+                                style: TextStyle(
+                                  color: data.buzzerEnabled ? Colors.white : Colors.grey,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Switch(
+                        value: data.buzzerEnabled,
+                        onChanged: (val) => provider.toggleBuzzer(),
+                        activeColor: const Color(0xFF00FF41),
+                        activeTrackColor: const Color(0xFF00FF41).withOpacity(0.2),
                       ),
                     ],
                   ),

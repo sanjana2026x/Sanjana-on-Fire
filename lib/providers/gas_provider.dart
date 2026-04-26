@@ -10,7 +10,13 @@ class GasProvider with ChangeNotifier {
   final NotificationService _notificationService = NotificationService();
   final Connectivity _connectivity = Connectivity();
 
-  GasData _currentData = GasData(gasValue: 0, status: 'CONNECTING...');
+  GasData _currentData = GasData(
+    mq2Value: 0, 
+    mq135Value: 0,
+    status: 'CONNECTING...', 
+    buzzerEnabled: true,
+    timestamp: DateTime.now()
+  );
   bool _isConnected = true;
   bool _hasTriggeredAlertForCurrentDanger = false;
   
@@ -56,15 +62,33 @@ class GasProvider with ChangeNotifier {
         notifyListeners();
       },
       onError: (error) {
-        _currentData = GasData(gasValue: 0, status: 'ERROR');
+        _currentData = GasData(
+          mq2Value: 0, 
+          mq135Value: 0,
+          status: 'ERROR', 
+          buzzerEnabled: true,
+          timestamp: DateTime.now()
+        );
         notifyListeners();
       },
     );
   }
 
+  Future<void> toggleBuzzer() async {
+    bool newStatus = !_currentData.buzzerEnabled;
+    await _firebaseService.updateBuzzer(newStatus);
+    // Note: Local UI will update via the stream listener from Firebase
+  }
+
   Future<void> refreshConnection() async {
     _gasDataSub?.cancel();
-    _currentData = GasData(gasValue: _currentData.gasValue, status: 'REFRESHING...');
+    _currentData = GasData(
+      mq2Value: _currentData.mq2Value, 
+      mq135Value: _currentData.mq135Value,
+      status: 'REFRESHING...', 
+      buzzerEnabled: _currentData.buzzerEnabled,
+      timestamp: DateTime.now()
+    );
     notifyListeners();
     
     await Future.delayed(const Duration(seconds: 1)); // UX simulation
