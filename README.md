@@ -90,7 +90,7 @@ int mq2Threshold = 500;
 FirebaseData fbdo;
 FirebaseAuth auth;
 FirebaseConfig config;
-
+//  f
 void setup() {
   Serial.begin(115200);
   pinMode(mq2Pin, INPUT);
@@ -136,4 +136,4 @@ void loop() {
 
 ## 👤 Author
 **Sanjana-on-Fire** 🛡️
-Designed for safety and real-time monitoring.
+Designed for safety and real-time monitoring.
