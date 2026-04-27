@@ -146,32 +146,6 @@ class DashboardView extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 
-                // Environment Cards
-                const Row(
-                  children: [
-                    Expanded(
-                      child: SensorCard(
-                        title: 'AMBIENT TEMP',
-                        value: '22.4',
-                        unit: '°C',
-                        icon: Icons.thermostat_outlined,
-                        baseColor: Colors.orangeAccent,
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: SensorCard(
-                        title: 'HUMIDITY',
-                        value: '45',
-                        unit: '%',
-                        icon: Icons.water_drop_outlined,
-                        baseColor: Colors.blueGrey,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                
                 // Auxiliary Arrays
                 Container(
                   padding: const EdgeInsets.all(20),
@@ -184,7 +158,7 @@ class DashboardView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'AUXILIARY ARRAYS',
+                        'SENSOR ARRAY STATUS',
                         style: TextStyle(
                           color: Colors.grey,
                           fontSize: 12,
@@ -197,17 +171,45 @@ class DashboardView extends StatelessWidget {
                       const SizedBox(height: 8),
                       LinearSensorIndicator(
                         icon: Icons.local_fire_department_outlined,
-                        label: 'LPG / Propane (MQ-2)',
-                        value: '${data.mq2Value} PPM',
-                        percentage: (data.mq2Value / 1024).clamp(0.0, 1.0),
-                        color: data.mq2Value > 500 ? Colors.redAccent : const Color(0xFF00FF41),
+                        label: 'Combustible Gas (MQ-2)',
+                        value: '${data.mq2Value} Units',
+                        percentage: (data.mq2Value / 4096).clamp(0.0, 1.0),
+                        color: data.mq2Value > 1500 ? Colors.redAccent : const Color(0xFF00FF41),
                       ),
                       LinearSensorIndicator(
                         icon: Icons.air,
-                        label: 'Air Quality (MQ-135)',
-                        value: '${data.mq135Value} AQI',
-                        percentage: (data.mq135Value / 1024).clamp(0.0, 1.0),
-                        color: data.mq135Value > 300 ? Colors.orangeAccent : Colors.blueAccent,
+                        label: 'Air Pollutants (MQ-135)',
+                        value: '${data.mq135Value} Units',
+                        percentage: (data.mq135Value / 4096).clamp(0.0, 1.0),
+                        color: data.mq135Value > 1200 ? Colors.orangeAccent : Colors.blueAccent,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // System Info Card
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.02),
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(color: Colors.white.withOpacity(0.05)),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.info_outline, color: Colors.white.withOpacity(0.3), size: 16),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'SYSTEM OPERATIONAL: ESP32 HUD v2.0\nMONITORING ACTIVE ON ALL CHANNELS',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.3),
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1,
+                          ),
+                        ),
                       ),
                     ],
                   ),

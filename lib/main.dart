@@ -10,7 +10,16 @@ void main() async {
   
   // Initialize Firebase
   try {
-    await Firebase.initializeApp();
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: 'AIzaSyDsPHtnfXomV0DhJfPpldkz0-J4LiYiB9A',
+        appId: '1:884072465646:web:d630ab56af859a2eadfff',
+        messagingSenderId: '884072465646',
+        projectId: 'smartgasmonitor-bb0ed',
+        databaseURL: 'https://smartgasmonitor-bb0ed-default-rtdb.asia-southeast1.firebasedatabase.app/',
+        storageBucket: 'smartgasmonitor-bb0ed.firebasestorage.app',
+      ),
+    );
   } catch (e) {
     debugPrint('Firebase initialization error: $e');
     // For a real app, you might want to handle this gracefully if the google-services.json is missing

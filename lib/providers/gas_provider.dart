@@ -19,12 +19,14 @@ class GasProvider with ChangeNotifier {
   );
   bool _isConnected = true;
   bool _hasTriggeredAlertForCurrentDanger = false;
+  final List<AlertLog> _alertHistory = [];
   
   StreamSubscription? _gasDataSub;
   StreamSubscription? _connectivitySub;
 
   GasData get currentData => _currentData;
   bool get isConnected => _isConnected;
+  List<AlertLog> get alertHistory => List.unmodifiable(_alertHistory);
 
   GasProvider() {
     _initConnectivity();
@@ -53,6 +55,17 @@ class GasProvider with ChangeNotifier {
           if (!_hasTriggeredAlertForCurrentDanger) {
             _notificationService.triggerDangerAlert();
             _hasTriggeredAlertForCurrentDanger = true;
+            
+            // Add to history
+            _alertHistory.insert(0, AlertLog(
+              message: 'DANGER DETECTED',
+              mq2Value: _currentData.mq2Value,
+              mq135Value: _currentData.mq135Value,
+              timestamp: DateTime.now(),
+            ));
+            
+            // Keep history limited to 50 items
+            if (_alertHistory.length > 50) _alertHistory.removeLast();
           }
         } else {
           // Reset when back to safe
@@ -93,6 +106,11 @@ class GasProvider with ChangeNotifier {
     
     await Future.delayed(const Duration(seconds: 1)); // UX simulation
     _connectToFirebase();
+  }
+
+  void clearHistory() {
+    _alertHistory.clear();
+    notifyListeners();
   }
 
   @override

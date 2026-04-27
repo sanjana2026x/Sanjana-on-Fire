@@ -16,14 +16,26 @@ class FirebaseService {
   /// Returns a stream of GasData reflecting real-time updates from 'gas_system'
   Stream<GasData> get gasDataStream {
     if (_dbRef == null) {
-      return Stream.value(GasData(gasValue: 412, status: 'SAFE')); // Mock data if Firebase fails
+      return Stream.value(GasData(
+        mq2Value: 412, 
+        mq135Value: 120, 
+        status: 'SAFE', 
+        buzzerEnabled: true, 
+        timestamp: DateTime.now()
+      )); // Mock data if Firebase fails
     }
     return _dbRef!.child('gas_system').onValue.map((event) {
       if (event.snapshot.value != null) {
         final data = event.snapshot.value as Map<dynamic, dynamic>;
         return GasData.fromMap(data);
       } else {
-        return GasData(gasValue: 10, status: 'NO_DATA');
+        return GasData(
+          mq2Value: 0, 
+          mq135Value: 0, 
+          status: 'NO_DATA', 
+          buzzerEnabled: true, 
+          timestamp: DateTime.now()
+        );
       }
     });
   }

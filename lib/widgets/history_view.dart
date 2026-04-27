@@ -1,97 +1,118 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
+import '../providers/gas_provider.dart';
 
 class HistoryView extends StatelessWidget {
   const HistoryView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Mock Data for History
-    final List<Map<String, dynamic>> mockHistory = [
-      {'time': '2023-10-27 14:30', 'value': 450, 'status': 'DANGER'},
-      {'time': '2023-10-27 14:15', 'value': 210, 'status': 'SAFE'},
-      {'time': '2023-10-27 12:00', 'value': 180, 'status': 'SAFE'},
-      {'time': '2023-10-26 09:30', 'value': 520, 'status': 'DANGER'},
-      {'time': '2023-10-26 08:45', 'value': 150, 'status': 'SAFE'},
-    ];
+    return Consumer<GasProvider>(
+      builder: (context, provider, child) {
+        final logs = provider.alertHistory;
 
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const Text(
-            'SYSTEM LOGS / HISTORY',
-            style: TextStyle(
-              color: Colors.grey,
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.5,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: ListView.builder(
-              physics: const BouncingScrollPhysics(),
-              itemCount: mockHistory.length,
-              itemBuilder: (context, index) {
-                final event = mockHistory[index];
-                final isDanger = event['status'] == 'DANGER';
-
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1E1E1E),
-                    borderRadius: BorderRadius.circular(4),
-                    border: Border(
-                      top: BorderSide(color: Colors.white.withOpacity(0.05)),
-                      right: BorderSide(color: Colors.white.withOpacity(0.05)),
-                      bottom: BorderSide(color: Colors.white.withOpacity(0.05)),
-                      left: BorderSide(
-                        color: isDanger ? Colors.redAccent : const Color(0xFF00FF41),
-                        width: 4,
-                      ),
+        return Container(
+          color: Colors.black,
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'INCIDENT LOGS',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2,
                     ),
                   ),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                    leading: CircleAvatar(
-                      backgroundColor: isDanger ? Colors.redAccent.withOpacity(0.1) : const Color(0xFF00FF41).withOpacity(0.1),
-                      child: Icon(
-                        isDanger ? Icons.warning_rounded : Icons.check_circle_rounded,
-                        color: isDanger ? Colors.redAccent : const Color(0xFF00FF41),
-                      ),
+                  if (logs.isNotEmpty)
+                    TextButton(
+                      onPressed: () => provider.clearHistory(),
+                      child: const Text('CLEAR ALL', style: TextStyle(color: Colors.redAccent, fontSize: 12)),
                     ),
-                    title: Text(
-                      'STATUS: ${event['status']}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: isDanger ? Colors.redAccent : const Color(0xFF00FF41),
-                        letterSpacing: 1,
-                        fontSize: 14,
+                ],
+              ),
+              const SizedBox(height: 20),
+              Expanded(
+                child: logs.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.shield_outlined, size: 64, color: Colors.white.withOpacity(0.1)),
+                            const SizedBox(height: 16),
+                            Text(
+                              'SYSTEM NOMINAL\nNO ALERTS RECORDED',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.2),
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 2,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: logs.length,
+                        itemBuilder: (context, index) {
+                          final log = logs[index];
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF1A1A1A),
+                              border: Border.all(color: Colors.redAccent.withOpacity(0.3)),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.redAccent.withOpacity(0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.warning_amber_rounded, color: Colors.redAccent, size: 20),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        log.message,
+                                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'MQ-2: ${log.mq2Value} | MQ-135: ${log.mq135Value}',
+                                        style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Text(
+                                  DateFormat('HH:mm:ss\nMMM dd').format(log.timestamp),
+                                  textAlign: TextAlign.right,
+                                  style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 10),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
-                    ),
-                    subtitle: Padding(
-                      padding: const EdgeInsets.only(top: 4.0),
-                      child: Text(
-                        'RECORDED: ${event['time']}',
-                        style: const TextStyle(color: Colors.grey, fontSize: 12, letterSpacing: 0.5),
-                      ),
-                    ),
-                    trailing: Text(
-                      '${event['value']} PPM',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

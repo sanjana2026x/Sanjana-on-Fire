@@ -39,3 +39,17 @@ class GasData {
   bool get isDanger => status == 'DANGER' || mq2Value > 500;
   bool get isSafe => !isDanger;
 }
+
+class AlertLog {
+  final String message;
+  final int mq2Value;
+  final int mq135Value;
+  final DateTime timestamp;
+
+  AlertLog({
+    required this.message,
+    required this.mq2Value,
+    required this.mq135Value,
+    required this.timestamp,
+  });
+}
