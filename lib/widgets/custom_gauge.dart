@@ -26,9 +26,9 @@ class _CustomGaugeState extends State<CustomGauge> with SingleTickerProviderStat
     super.initState();
     _pulseController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 1200),
     );
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.15).animate(
+    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.08).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
 
@@ -64,25 +64,48 @@ class _CustomGaugeState extends State<CustomGauge> with SingleTickerProviderStat
         return Transform.scale(
           scale: widget.isDanger ? _pulseAnimation.value : 1.0,
           child: Container(
-            width: 250,
-            height: 250,
+            width: 240,
+            height: 240,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: color.withOpacity(widget.isDanger ? 0.3 : 0.1),
-                  blurRadius: widget.isDanger ? 30 : 20,
-                  spreadRadius: widget.isDanger ? 5 : 2,
+                  color: color.withOpacity(widget.isDanger ? 0.2 : 0.05),
+                  blurRadius: 40,
+                  spreadRadius: 5,
                 ),
               ],
             ),
             child: Stack(
               alignment: Alignment.center,
               children: [
+                // Background Track
                 CustomPaint(
-                  size: const Size(250, 250),
-                  painter: _DashedCirclePainter(isDanger: widget.isDanger, color: color),
+                  size: const Size(220, 220),
+                  painter: _GaugePainter(
+                    percentage: 1.0,
+                    color: Colors.white.withOpacity(0.05),
+                    strokeWidth: 4,
+                  ),
                 ),
+                // Progress Arc
+                TweenAnimationBuilder<double>(
+                  tween: Tween<double>(begin: 0, end: (widget.value / 1000).clamp(0.0, 1.0)),
+                  duration: const Duration(milliseconds: 1500),
+                  curve: Curves.easeOutCubic,
+                  builder: (context, value, child) {
+                    return CustomPaint(
+                      size: const Size(220, 220),
+                      painter: _GaugePainter(
+                        percentage: value,
+                        color: color,
+                        strokeWidth: 10,
+                        isDanger: widget.isDanger,
+                      ),
+                    );
+                  },
+                ),
+                // Center Text
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -94,28 +117,29 @@ class _CustomGaugeState extends State<CustomGauge> with SingleTickerProviderStat
                         return Text(
                           value.toInt().toString(),
                           style: TextStyle(
-                            fontSize: 64,
-                            fontWeight: FontWeight.bold,
-                            color: color,
+                            fontSize: 72,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white,
                             letterSpacing: -2,
-                            fontFamily: 'Roboto',
+                            height: 1,
                             shadows: [
                               Shadow(
-                                color: color.withOpacity(0.5),
-                                blurRadius: 10,
+                                color: color.withOpacity(0.8),
+                                blurRadius: 20,
                               ),
                             ],
                           ),
                         );
                       },
                     ),
+                    const SizedBox(height: 4),
                     Text(
                       widget.unit,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey,
-                        letterSpacing: 2,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: color.withOpacity(0.7),
+                        letterSpacing: 4,
                       ),
                     ),
                   ],
@@ -129,41 +153,71 @@ class _CustomGaugeState extends State<CustomGauge> with SingleTickerProviderStat
   }
 }
 
-class _DashedCirclePainter extends CustomPainter {
-  final bool isDanger;
+class _GaugePainter extends CustomPainter {
+  final double percentage;
   final Color color;
+  final double strokeWidth;
+  final bool isDanger;
 
-  _DashedCirclePainter({required this.isDanger, required this.color});
+  _GaugePainter({
+    required this.percentage,
+    required this.color,
+    required this.strokeWidth,
+    this.isDanger = false,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
-    final double radius = min(size.width / 2, size.height / 2);
-    final Offset center = Offset(size.width / 2, size.height / 2);
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = (size.width / 2) - 10;
     
-    final Paint paint = Paint()
+    final paint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 8
-      ..strokeCap = StrokeCap.square;
+      ..strokeWidth = strokeWidth
+      ..strokeCap = StrokeCap.round;
 
-    int dashCount = 36;
-    double startAngle = -pi / 2;
-    double sweepAngle = (2 * pi / dashCount) * 0.6;
+    if (percentage < 1.0 || !isDanger) {
+       canvas.drawArc(
+        Rect.fromCircle(center: center, radius: radius),
+        -pi / 2,
+        2 * pi * percentage,
+        false,
+        paint,
+      );
+    } else {
+      // Glow effect for danger
+      final glowPaint = Paint()
+        ..color = color.withOpacity(0.3)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = strokeWidth + 4
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10);
+      
+      canvas.drawCircle(center, radius, glowPaint);
+      canvas.drawCircle(center, radius, paint);
+    }
 
-    for (int i = 0; i < dashCount; i++) {
-        canvas.drawArc(
-          Rect.fromCircle(center: center, radius: radius),
-          startAngle,
-          sweepAngle,
-          false,
-          paint,
-        );
-        startAngle += 2 * pi / dashCount;
+    // Add some ticks
+    final tickPaint = Paint()
+      ..color = color.withOpacity(0.2)
+      ..strokeWidth = 2;
+    
+    for (int i = 0; i < 60; i++) {
+      final angle = (2 * pi / 60) * i;
+      final outerPoint = Offset(
+        center.dx + radius * cos(angle),
+        center.dy + radius * sin(angle),
+      );
+      final innerPoint = Offset(
+        center.dx + (radius - (i % 5 == 0 ? 10 : 5)) * cos(angle),
+        center.dy + (radius - (i % 5 == 0 ? 10 : 5)) * sin(angle),
+      );
+      canvas.drawLine(innerPoint, outerPoint, tickPaint);
     }
   }
 
   @override
-  bool shouldRepaint(covariant _DashedCirclePainter oldDelegate) {
-    return oldDelegate.isDanger != isDanger || oldDelegate.color != color;
+  bool shouldRepaint(covariant _GaugePainter oldDelegate) {
+    return oldDelegate.percentage != percentage || oldDelegate.color != color;
   }
 }

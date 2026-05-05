@@ -15,6 +15,8 @@ class GasProvider with ChangeNotifier {
     mq135Value: 0,
     status: 'CONNECTING...', 
     buzzerEnabled: true,
+    fanStatus: false,
+    lightStatus: false,
     timestamp: DateTime.now()
   );
   bool _isConnected = true;
@@ -50,8 +52,13 @@ class GasProvider with ChangeNotifier {
       (data) {
         _currentData = data;
         
-        // Alert Logic
+        // Alert Logic & Auto-Fan
         if (_currentData.isDanger) {
+          // Auto-turn on fan if gas leak detected
+          if (!_currentData.fanStatus) {
+            _firebaseService.updateFanStatus(true);
+          }
+
           if (!_hasTriggeredAlertForCurrentDanger) {
             _notificationService.triggerDangerAlert();
             _hasTriggeredAlertForCurrentDanger = true;
@@ -80,6 +87,8 @@ class GasProvider with ChangeNotifier {
           mq135Value: 0,
           status: 'ERROR', 
           buzzerEnabled: true,
+          fanStatus: false,
+          lightStatus: false,
           timestamp: DateTime.now()
         );
         notifyListeners();
@@ -90,7 +99,16 @@ class GasProvider with ChangeNotifier {
   Future<void> toggleBuzzer() async {
     bool newStatus = !_currentData.buzzerEnabled;
     await _firebaseService.updateBuzzer(newStatus);
-    // Note: Local UI will update via the stream listener from Firebase
+  }
+
+  Future<void> toggleFan() async {
+    bool newStatus = !_currentData.fanStatus;
+    await _firebaseService.updateFanStatus(newStatus);
+  }
+
+  Future<void> toggleLight() async {
+    bool newStatus = !_currentData.lightStatus;
+    await _firebaseService.updateLightStatus(newStatus);
   }
 
   Future<void> refreshConnection() async {
@@ -100,6 +118,8 @@ class GasProvider with ChangeNotifier {
       mq135Value: _currentData.mq135Value,
       status: 'REFRESHING...', 
       buzzerEnabled: _currentData.buzzerEnabled,
+      fanStatus: _currentData.fanStatus,
+      lightStatus: _currentData.lightStatus,
       timestamp: DateTime.now()
     );
     notifyListeners();

@@ -3,6 +3,8 @@ class GasData {
   final int mq135Value;
   final String status;
   final bool buzzerEnabled;
+  final bool fanStatus;
+  final bool lightStatus;
   final DateTime timestamp;
 
   GasData({
@@ -10,6 +12,8 @@ class GasData {
     required this.mq135Value,
     required this.status,
     required this.buzzerEnabled,
+    required this.fanStatus,
+    required this.lightStatus,
     required this.timestamp,
   });
 
@@ -23,6 +27,8 @@ class GasData {
         mq135Value: 0,
         status: 'UNKNOWN',
         buzzerEnabled: true,
+        fanStatus: false,
+        lightStatus: false,
         timestamp: DateTime.now(),
       );
     }
@@ -32,6 +38,8 @@ class GasData {
       mq135Value: (map['mq135_value'] ?? 0) as int,
       status: (map['status'] ?? 'UNKNOWN').toString().toUpperCase(),
       buzzerEnabled: (map['buzzer_enabled'] ?? true) as bool,
+      fanStatus: (map['fan_status'] ?? false) as bool,
+      lightStatus: (map['light_status'] ?? false) as bool,
       timestamp: DateTime.now(),
     );
   }

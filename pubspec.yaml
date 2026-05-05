@@ -28,6 +28,10 @@ dependencies:
   connectivity_plus: ^6.0.3
   intl: ^0.20.2
 
+  # Hardware and Communication
+  url_launcher: ^6.3.1
+  shared_preferences: ^2.2.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

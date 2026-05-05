@@ -3,6 +3,7 @@ import '../widgets/dashboard_view.dart';
 import '../widgets/history_view.dart';
 import '../widgets/alerts_view.dart';
 import '../widgets/calibrate_view.dart';
+import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -36,7 +37,15 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const Spacer(),
-            Icon(Icons.account_circle_outlined, color: const Color(0xFF00FF41).withOpacity(0.8)),
+            IconButton(
+              icon: Icon(Icons.account_circle_outlined, color: const Color(0xFF00FF41).withOpacity(0.8)),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                );
+              },
+            ),
           ],
         ),
       ),

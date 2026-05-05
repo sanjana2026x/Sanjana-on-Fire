@@ -21,6 +21,8 @@ class FirebaseService {
         mq135Value: 120, 
         status: 'SAFE', 
         buzzerEnabled: true, 
+        fanStatus: false,
+        lightStatus: false,
         timestamp: DateTime.now()
       )); // Mock data if Firebase fails
     }
@@ -34,6 +36,8 @@ class FirebaseService {
           mq135Value: 0, 
           status: 'NO_DATA', 
           buzzerEnabled: true, 
+          fanStatus: false,
+          lightStatus: false,
           timestamp: DateTime.now()
         );
       }
@@ -44,5 +48,15 @@ class FirebaseService {
   Future<void> updateBuzzer(bool enabled) async {
     if (_dbRef == null) return;
     await _dbRef!.child('gas_system').update({'buzzer_enabled': enabled});
+  }
+
+  Future<void> updateFanStatus(bool status) async {
+    if (_dbRef == null) return;
+    await _dbRef!.child('gas_system').update({'fan_status': status});
+  }
+
+  Future<void> updateLightStatus(bool status) async {
+    if (_dbRef == null) return;
+    await _dbRef!.child('gas_system').update({'light_status': status});
   }
 }
